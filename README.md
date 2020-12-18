@@ -72,7 +72,7 @@ The markdown result is sorted by platform/software version and provides addition
 
 - Implement scheduled pipeline for playbook execution
 - Pipe the vuln metrics to InfluxDB/Grafana to visualize in a CVSS-based heatmap
-- Alert ops via slack message, Grafana alert or, meh, even mail / ticket
+- Alert ops about unknown advisories via slack message, Grafana alert or, meh, even mail / ticket
 - ...
 
 
