@@ -46,8 +46,13 @@ This is just a flat dictionary with the advisoryId as key and an optional commen
     cisco-another-advisoryId: We're in the process of updating to version ...
     ...
 
+### 5. Specify https-proxy if needed for external API access 
+
+
 ## Run 
+ 
+ansible-playbook openvuln.yml
 
-
-
-Useful to 
+Options:
+`-k` Ansible uses the current user and queries for the password to log into the IOS/NS-OS devices.  
+`-i <inventory_file>` If you'd like to provide a (dynamic?) inventory other than the default one living in /etc/ansible/hosts.  
