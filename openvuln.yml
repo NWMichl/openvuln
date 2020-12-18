@@ -118,8 +118,8 @@
           client_secret: "{{ client_secret }}"
         validate_certs: no
         body_format: form-urlencoded
-      environment:
-        https_proxy: http://<proxy-url>:<port>
+#      environment:
+#        https_proxy: http://<proxy-url>:<port>
       register: login
 
     - name: SET ACCESS-TOKEN FROM LOGIN RESPONSE
@@ -137,8 +137,8 @@
         validate_certs: no
         status_code: [200, 406] # API reports 406 NO_DATA if no matching adv is found #
       loop: "{{ os_list }}"
-      environment:
-        https_proxy: http://<proxy-url>:<port>
+#      environment:
+#        https_proxy: http://<proxy-url>:<port>
       register: open_vuln
 
      # Process API response #
