@@ -1,4 +1,4 @@
-# Autogenerate vulnerability reports for Cisco IOS, NX-OS and ACI 
+# Vulnerability reports for Cisco IOS, NX-OS and ACI 
 
 This Ansible playbook collects the software version of all devices in the inventory, queries the [Cisco PSIRT OpenVuln API](https://developer.cisco.com/psirt/) and generates a markdown report.
 
