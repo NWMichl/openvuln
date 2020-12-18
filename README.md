@@ -1,6 +1,6 @@
 # Vulnerability reports for Cisco IOS, NX-OS and ACI 
 
-This Ansible playbook collects the software version of all devices in the inventory, queries the [Cisco PSIRT OpenVuln API](https://developer.cisco.com/psirt/) and generates a markdown report.
+This Ansible playbook collects the software version of all devices in the inventory, queries the [Cisco PSIRT OpenVuln API](https://developer.cisco.com/psirt/) and renders a markdown report.
 
 ## API Keys
 
@@ -37,4 +37,9 @@ In case you'd like to automagically include the software version of all leaf/spi
       - { apic: <APIC-Fabric1-URL/IP> , aci_user: <username1>, aci_pass: <password1> }
       - { apic: <APIC-Fabric2-URL/IP> , aci_user: <username2>, aci_pass: <password2> }
 
-### 4. 
+### 4. A list of known security advisories named known_vuln.yml
+
+This is just a flat dictionary with the advisoryId as key and an optional comment as value, to document the status and / or countermeasures for each vulnarbility in your organisation. This is useful to keep track of security improving activities and to quickly spot when new / unseen advisories arive. 
+
+
+Useful to 
