@@ -1,7 +1,11 @@
 # Vulnerability reports for Cisco IOS, NX-OS and ACI 
 
-This Ansible playbook collects the software version of all devices in the inventory, queries the [Cisco PSIRT OpenVuln API](https://developer.cisco.com/psirt/) and renders a markdown report.
-
+This Ansible playbook collects the software version of all devices in the inventory, queries the [Cisco PSIRT OpenVuln API](https://developer.cisco.com/psirt/) and renders a markdown report.  
+  
+  
+![openvuln.md Screenshot](/openvuln.md.png)
+  
+  
 ## API Keys
 
 You need to generate a client_key/id and client_secret via the [Cisco API Console](https://apiconsole.cisco.com/) using your CCO Login under `My Apps & Keys`, `Register a new App`.
