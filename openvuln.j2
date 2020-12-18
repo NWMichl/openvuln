@@ -1,0 +1,28 @@
+# Security posture via Cisco PSIRT OpenVuln API
+
+*Report created at {{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }} {{ ansible_date_time.tz }}*
+
+{% for os_loop in open_vuln.results -%}
+## {{ os_loop.item.name | upper }} - {{ os_loop.item.version }}
+
+{% for item in tag_list %}{% if item.name == os_loop.item.name and item.version == os_loop.item.version %}`{{ item.tag | default ('') }}` {% endif %}{% endfor %}  
+
+{% if os_loop.json.advisories is defined %}
+| Advisory-ID | Impact | CVSS | CVE | Fixed with | Known advisory / countermeasure |  
+| ----------- | ------ | ---- | --- | ---------- | --------------------------------- |  
+{% for adv in os_loop.json.advisories %}
+{% if adv.cvssBaseScore == '10.0' %}
+| [{{ adv.advisoryId }}]({{ adv.publicationUrl }}) | {{ adv.sir }} | {{ adv.cvssBaseScore }} | {{ adv.cves[0] | default('') }} | {{ adv.platforms[0].firstFixes[0].name | default('') }} | {{ known_vuln[adv.advisoryId] | default('') }} |  
+{% endif %}
+{% endfor %}
+{% for adv in os_loop.json.advisories | sort(attribute='cvssBaseScore', reverse = True) %}
+{% if adv.cvssBaseScore != '10.0' %}
+| [{{ adv.advisoryId }}]({{ adv.publicationUrl }}) | {{ adv.sir }} | {{ adv.cvssBaseScore }} | {{ adv.cves[0] | default('') }} | {{ adv.platforms[0].firstFixes[0].name | default('') }} | {{ known_vuln[adv.advisoryId] | default('') }} |  
+{% endif %}
+{% endfor %}
+{% else %}
+No active OpenVuln advisories found!  
+{% endif %}
+  
+  
+{% endfor %}
