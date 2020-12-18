@@ -68,4 +68,11 @@ Options:
 
 The markdown result is sorted by platform/software version and provides additional info about the associated hostgroup (tag). The tag is either provided by hand via the host_files variable or automagically added based on the Ansible inventory groups and ACI APIC URL/IP.  
 
+## Backlog
+
+- Implement scheduled pipeline for playbook execution
+- Pipe the vuln metrics to InfluxDB/Grafana to visualize in a CVSS-based heatmap
+- Alert ops via slack message, Grafana alert or, meh, even mail / ticket
+- ...
+
 
