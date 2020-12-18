@@ -54,7 +54,7 @@ This is just a flat dictionary with the advisoryId as the key and an optional co
 
 If you need to reach the OpenVuln API via an https-proxy, just uncomment the four config lines of the Cisco API tasks and enter the proxy parameters, like URL, Port and credentials.
 
-## Run 
+## Playbook run 
 
 The playbook can be run 'as is' with the preconfigured test data in the host_list variable.
 
