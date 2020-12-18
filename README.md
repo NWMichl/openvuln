@@ -11,14 +11,14 @@ Select OAuth2.0 Client Credentials and the Cisco PSIRT checkbox to receive the n
 
 The playbook needs certain input data to do it's job, not all of them are mandatory.
 
-### 1. API Credentials (Mandatory)
+### 1. API Credentials
 
 Under the vars section of the second play, or via external extra vars:
 
     client_key: <client_key provided by the API Console> 
     client_secret: <client_secret provided by the API Console>
 
-### 2. A list of hosts named host_list
+### 2. (opt) A list of platform / software version combinations
 
 Under the vars section of the second play, or via external extra vars.  
 Useful for air gapped environments or simple API testing.
@@ -28,7 +28,7 @@ Useful for air gapped environments or simple API testing.
           - { name: nxos, version: 7.0(3)I7(7), tag: Test_NXOS }
           - ...
 
-### 3. A list of Cisco ACI credentials named aci 
+### 3. (opt) A list of Cisco ACI APICs & credentials
 
 Under the vars section of the second play, or via external extra vars.  
 In case you'd like to automagically include the software version of all leaf/spine switches of one or more ACI fabrics.   
@@ -37,7 +37,7 @@ In case you'd like to automagically include the software version of all leaf/spi
       - { apic: <APIC-Fabric1-URL/IP> , aci_user: <username1>, aci_pass: <password1> }
       - { apic: <APIC-Fabric2-URL/IP> , aci_user: <username2>, aci_pass: <password2> }
 
-### 4. A list of known security advisories via an external file known_vuln.yml
+### 4. (opt) A list of known security advisories via the external file known_vuln.yml
 
 This is just a flat dictionary with the advisoryId as key and an optional comment as value, to document the status and / or countermeasures for each vulnarbility in your organisation. This is useful to keep track of security improving activities and to quickly spot when new / unseen advisories arive. The format of the file looks like:
 
@@ -46,13 +46,17 @@ This is just a flat dictionary with the advisoryId as key and an optional commen
     cisco-another-advisoryId: We're in the process of updating to version ...
     ...
 
-### 5. Specify https-proxy if needed for external API access 
+### 5. (opt) Specify https-proxy if needed for external API access 
 
 
 ## Run 
- 
+
+The playbook can be run 'as is' with the preconfigured test data in the host_list variable.
+
 ansible-playbook openvuln.yml
 
-Options:
+Options:  
 `-k` Ansible uses the current user and queries for the password to log into the IOS/NS-OS devices.  
 `-i <inventory_file>` If you'd like to provide a (dynamic?) inventory other than the default one living in /etc/ansible/hosts.  
+
+## Output
