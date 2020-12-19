@@ -13,12 +13,12 @@
   gather_subset: min
   vars:
 #    aci:
-#      - { apic: , aci_user: , aci_pass: }
+#      - { apic: <APIC-URL/IP>, aci_user: <username>, aci_pass: <password> }
     host_list:
       - { name: aci, version: 14.2(5k), tag: Test_ACI }
       - { name: nxos, version: 7.0(3)I7(7), tag: Test_NXOS }
-    client_key:  
-    client_secret: 
+    client_key: <client_key via Cisco API console> 
+    client_secret: <client_secret via Cisco API console>
 
   tasks:    
 
