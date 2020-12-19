@@ -1,13 +1,12 @@
 ---
-- name: Collect software version from all IOS and NX-OS devices
+- name: Collect facts from all devices in the Ansible Inventory 
   hosts: all
   gather_facts: true
   gather_subset: min
   connection: network_cli
   ignore_errors: true
-  ignore_unreachable: true
 
-- name: Collect ACI software version, craft host_list and query Cisco PSIRT OpenVuln API
+- name: Collect ACI software version and query Cisco PSIRT OpenVuln API
   hosts: localhost
   gather_facts: true
   gather_subset: min
@@ -15,18 +14,18 @@
 #    aci:
 #      - { apic: <APIC-URL/IP>, aci_user: <username>, aci_pass: <password> }
     host_list:
-      - { name: aci, version: 14.2(5k), tag: Test_ACI }
       - { name: nxos, version: 7.0(3)I7(7), tag: Test_NXOS }
-    client_key: <client_key via Cisco API console> 
-    client_secret: <client_secret via Cisco API console>
+      - { name: aci, version: 14.2(5k), tag: Test_ACI }
+    client_key: <provided by Cisco API console>
+    client_secret: <provided by Cisco API console>
 
-  tasks:    
+  tasks:
 
     - name: INCLUDE KNOWN VULN FILE
       include_vars:
         file: known_vuln.yml
         name: known_vuln
-      ignore_errors: yes
+      ignore_errors: yes # In case the file doesn't exist #
 
     - name: Query ACI fabric nodes
       aci_rest:
@@ -39,19 +38,13 @@
       loop: "{{ aci }}"
       register: aci_firmware
       when: aci is defined
-   
-    # Complete the host_list with ACI, NX-OS, IOS-XE and IOS devices #
 
-    - name: ENSURE FOLLOWING TASKS LOOP GETS A LIST
-      set_fact:
-        aci_firmware:
-          results: []
-      when: aci is not defined and not aci_firmware.changed
+    # Complete the host_list with ACI, NX-OS, IOS-XE and IOS devices #
 
     - name: ADD ACI DEVICES TO HOST LIST
       set_fact:
         host_list: "{{ host_list | default ([]) + [{ 'name': 'aci', 'version': '1' + item.1.firmwareRunning.attributes.peVer, 'tag': item.0.item.apic }] }}"
-      loop: "{{ aci_firmware.results | subelements('imdata') }}"
+      loop: "{{ aci_firmware.results | default ([]) | subelements('imdata') }}" # Definitely needs an empty list in case aci variable is not defined! #
       loop_control:
         label: "{{ item.0.item.apic }} {{ item.1.firmwareRunning.attributes.dn.split('/')[2] }}"
       when: aci is defined
@@ -86,22 +79,15 @@
 
     # Prepare tag_list and os_list #
 
-    - name: GENERATE TAG_LIST FROM HOST_LIST
+    - name: GENERATE TAG_LIST AND OS_LIST FROM HOST_LIST
       set_fact:
         tag_list: "{{ tag_list | default ([]) + [{ 'name': item.name, 'version': item.version, 'tag': item.tag  }] }}"
-      loop: "{{ host_list }}"
-
-    - name: ERASE DUPLICATES AND SORT TAG_LIST
-      set_fact:
-        tag_list: "{{ tag_list | unique | sort(attribute='version', reverse = True) }}"
-
-    - name: GENERATE OS_LIST FROM HOST_LIST
-      set_fact:
         os_list: "{{ os_list | default ([]) + [{ 'name': item.name, 'version': item.version }] }}"
       loop: "{{ host_list }}"
 
-    - name: ERASE DUPLICATES AND SORT OS_LIST
+    - name: ERASE DUPLICATES AND SORT TAG_LIST AND OS_LIST
       set_fact:
+        tag_list: "{{ tag_list | unique | sort(attribute='version', reverse = True) }}"
         os_list: "{{ os_list | unique | sort(attribute='version', reverse = True) }}"
 
     # Query the Cisco PSIRT openVuln API
@@ -122,17 +108,12 @@
 #        https_proxy: http://<proxy-url>:<port>
       register: login
 
-    - name: SET ACCESS-TOKEN FROM LOGIN RESPONSE
-      set_fact:
-        token_type: "{{ login.json.token_type }}"
-        access_token: "{{ login.json.access_token }}"
-
     - name: GET CISCO PSIRT OPEN VULN
       uri:
         url: https://api.cisco.com/security/advisories/{{ item.name }}?version={{ item.version }}
         headers:
           Accept: application/json
-          Authorization: "{{ token_type }} {{ access_token }}"
+          Authorization: "{{ login.json.token_type }} {{ login.json.access_token }}"
         method: GET
         validate_certs: no
         status_code: [200, 406] # API reports 406 NO_DATA if no matching adv is found #
@@ -147,4 +128,3 @@
       template:
         src: openvuln.j2
         dest: openvuln.md
-
