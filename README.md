@@ -67,6 +67,7 @@ Options:
 ## Output
 
 The markdown result is sorted by platform/software version and provides additional info about the associated hostgroup (tag). The tag is either provided by hand via the host_files variable or automagically added based on the Ansible inventory groups and ACI APIC URL/IP.  
+Oh, and each advisoryId has an HTML reference to Cisco Security Advisory website.
 
 ## Backlog
 
