@@ -9,7 +9,7 @@
 
 {% if os_loop.json.advisories is defined %}
 | Advisory-ID | Impact | CVSS | CVE | Fixed with | Known advisory / countermeasure |  
-| ----------- | ------ | ---- | --- | ---------- | --------------------------------- |  
+| ----------- | ------ | ---- | --- | ---------- | ------------------------------- |  
 {% for adv in os_loop.json.advisories %}
 {% if adv.cvssBaseScore == '10.0' %}
 | [{{ adv.advisoryId }}]({{ adv.publicationUrl }}) | {{ adv.sir }} | {{ adv.cvssBaseScore }} | {{ adv.cves[0] | default('') }} | {{ adv.platforms[0].firstFixes[0].name | default('') }} | {{ known_vuln[adv.advisoryId] | default('') }} |  
