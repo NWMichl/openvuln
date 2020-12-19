@@ -8,7 +8,7 @@ This Ansible playbook collects the software version of all devices in the invent
   
 ## API Keys
 
-You need to generate a client_key/id and client_secret via the [Cisco API Console](https://apiconsole.cisco.com/) using your CCO Login under `My Apps & Keys`, `Register a new App`.
+You need to generate a client_key and client_secret via the [Cisco API Console](https://apiconsole.cisco.com/) using your CCO Login under `My Apps & Keys`, `Register a new App`.
 Select OAuth2.0 Client Credentials and the Cisco PSIRT checkbox to receive the necessary API keys.
 
 ## Input Data
@@ -67,7 +67,7 @@ Options:
 ## Output
 
 The markdown result is sorted by platform/software version and provides additional info about the associated hostgroup (tag). The tag is either provided by hand via the host_files variable or automagically added based on the Ansible inventory groups and ACI APIC URL/IP.  
-Oh, and each advisoryId has an HTML reference to Cisco Security Advisory website.
+Oh, and each advisoryId has an HTML reference to the Cisco Security Advisory website.
 
 ## Backlog
 
