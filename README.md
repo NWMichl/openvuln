@@ -3,7 +3,7 @@
 This Ansible playbook collects the software version of all devices in the inventory, queries the [Cisco PSIRT OpenVuln API](https://developer.cisco.com/psirt/) and renders a [markdown report](https://github.com/NWMichl/openvuln/blob/main/openvuln.md).  
   
   
-![openvuln.md Screenshot](/openvuln.md.png)
+![openvuln.md Screenshot](/pictures/openvuln.md.png)
   
   
 ## API Keys
@@ -67,7 +67,9 @@ Options:
 ## Output
 
 The markdown result is sorted by platform/software version and provides additional info about the associated hostgroup (tag). The tag is either provided by hand via the host_files variable or automagically added based on the Ansible inventory groups and ACI APIC URL/IP.  
-Oh, and each advisoryId has an HTML reference to the Cisco Security Advisory website.
+Oh, and each advisoryId has an HTML reference to the Cisco Security Advisory website with all the details.
+
+![Cisco Security Advisory website](/pictures/sec_adv.png)
 
 ## Backlog
 
