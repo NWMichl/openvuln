@@ -66,10 +66,12 @@ Options:
 
 ## Output
 
-The markdown result is sorted by platform/software version and provides additional info about the associated hostgroup (tag). The tag is either provided by hand via the host_files variable or automagically added based on the Ansible inventory groups and ACI APIC URL/IP.  
+The markdown result is sorted by platform/software version and provides additional info about the associated hostgroup (tag) as well as the number of affected devices. The tag is either provided by hand via the host_files variable or automagically added based on the Ansible inventory groups and ACI APIC URL/IP.  
 Oh, and each advisoryId has an HTML reference to the Cisco Security Advisory website with all the details.
 
-[![Cisco Security Advisory website](/pictures/sec_adv.png)](https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nxosbgp-mvpn-dos-K8kbCrJp)
+[![Cisco Security Advisory website](/pictures/sec_adv.png)](https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nxosbgp-mvpn-dos-K8kbCrJp)  
+
+The additional `openvuln.csv`file lists all hostnames together with groupname/tag and software version. 
 
 ## Backlog
 
