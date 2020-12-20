@@ -43,7 +43,7 @@ In case you'd like to automagically include the software version of all leaf/spi
 
 ### 4. (opt) A list of known security advisories via the external file known_vuln.yml
 
-This is just a flat dictionary with the advisoryId as the key and an optional comment as value, to document the status and/or countermeasures for each vulnerability in your infrastructure. This is useful to keep track of security improving activities and to quickly spot when new/unseen advisories arive. The format of the file looks like:
+This is just a flat dictionary with the advisoryId as the key and an optional comment as value, to document the status and/or countermeasures for each vulnerability in your infrastructure. Useful to keep track of security improving activities and to quickly spot when new advisories arive. The format of the file looks like:
 
     ---
     cisco-sa-20200226-fxos-nxos-cdp: CDP not in use / disabled
@@ -54,9 +54,9 @@ This is just a flat dictionary with the advisoryId as the key and an optional co
 
 If you need to reach the OpenVuln API via an https-proxy, just uncomment the four config lines of the Cisco API tasks and enter the proxy parameters, like URL, Port and credentials.
 
-## Playbook run 
+## Playbook execution
 
-The playbook can be run 'as is' with the preconfigured test data in the host_list variable.
+The playbook can be run 'as is' with the preconfigured test data in the host_list variable, just by adding the API client_key & client_secret.
 
 `ansible-playbook openvuln.yml`
 
@@ -67,11 +67,11 @@ Options:
 ## Output
 
 The markdown result is sorted by platform/software version and provides additional info about the associated hostgroup (tag) as well as the number of affected devices. The tag is either provided by hand via the host_files variable or automagically added based on the Ansible inventory groups and ACI APIC URL/IP.  
-Oh, and each advisoryId has an HTML reference to the Cisco Security Advisory website with all the details.
+Oh, and each advisoryId has an HTML reference to the Cisco Security Advisory website with all the bad details.
 
 [![Cisco Security Advisory website](/pictures/sec_adv.png)](https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nxosbgp-mvpn-dos-K8kbCrJp)  
 
-The additional `openvuln.csv`file lists all hostnames together with groupname/tag and software version. 
+The additional `openvuln.csv` file lists all hostnames, group/tag and software version to map advisories to affected device using your spreadsheet software of choice. 
 
 ## Backlog
 
