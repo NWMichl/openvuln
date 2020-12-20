@@ -28,8 +28,8 @@ Under the vars section of the second play, or via external extra vars.
 Useful for air-gapped environments or simple API testing.
 
     host_list:
-          - { name: aci, version: 14.2(5k), tag: Test_ACI }
-          - { name: nxos, version: 7.0(3)I7(7), tag: Test_NXOS }
+          - { name: aci, version: 14.2(5k), tag: Test_ACI, host: node-101 }
+          - { name: nxos, version: 7.0(3)I7(7), tag: Test_NXOS, host: N9K-1 }
           - ...
 
 ### 3. (opt) A list of Cisco ACI APICs & credentials
