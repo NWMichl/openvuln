@@ -13,11 +13,11 @@
   vars:
 #    aci:
 #      - { apic: <APIC-URL/IP>, aci_user: <username>, aci_pass: <password> }
-    host_list:
-      - { name: nxos, version: 7.0(3)I7(7), tag: Test_NXOS }
-      - { name: aci, version: 14.2(5k), tag: Test_ACI }
-    client_key: <provided by Cisco API console>
-    client_secret: <provided by Cisco API console>
+    host_list: # Needs at least an empty tag: and host: variable per list item #
+      - { name: nxos, version: 7.0(3)I7(7), tag: Test_NXOS, host: N9K-1 }
+      - { name: aci, version: 14.2(5k), tag: Test_ACI, host: ACI-leaf-1 }
+    client_key: <Provided via Cisco API console>
+    client_secret: <Provided via Cisco API console>
 
   tasks:
 
@@ -43,7 +43,7 @@
 
     - name: ADD ACI DEVICES TO HOST LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'name': 'aci', 'version': '1' + item.1.firmwareRunning.attributes.peVer, 'tag': item.0.item.apic }] }}"
+        host_list: "{{ host_list | default ([]) + [{ 'name': 'aci', 'version': '1' + item.1.firmwareRunning.attributes.peVer, 'tag': item.0.item.apic, 'host': item.1.firmwareRunning.attributes.dn.split('/')[2] }] }}"
       loop: "{{ aci_firmware.results | default ([]) | subelements('imdata') }}" # Definitely needs an empty list in case aci variable is not defined! #
       loop_control:
         label: "{{ item.0.item.apic }} {{ item.1.firmwareRunning.attributes.dn.split('/')[2] }}"
@@ -51,7 +51,7 @@
 
     - name: ADD NX-OS DEVICES TO HOST LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'name': 'nxos', 'version': hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' ') }] }}"
+        host_list: "{{ host_list | default ([]) + [{ 'name': 'nxos', 'version': hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' '), 'host': hostvars[item].ansible_facts.net_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
@@ -59,7 +59,7 @@
 
     - name: ADD IOS-XE DEVICES TO HOST LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'name': 'iosxe', 'version': hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' ') }] }}"
+        host_list: "{{ host_list | default ([]) + [{ 'name': 'iosxe', 'version': hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' '), 'host': hostvars[item].ansible_facts.net_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
@@ -69,26 +69,13 @@
 
     - name: ADD IOS DEVICES TO HOST LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'name': 'ios', 'version': hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' ') }] }}"
+        host_list: "{{ host_list | default ([]) + [{ 'name': 'ios', 'version': hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' '), 'host': hostvars[item].ansible_facts.net_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
         - hostvars[item].ansible_network_os == "ios"
         - hostvars[item].ansible_facts.net_version is defined
         - hostvars[item].ansible_facts.net_version.split('.') | first in ['12', '15']
-
-    # Prepare tag_list and os_list #
-
-    - name: GENERATE TAG_LIST AND OS_LIST FROM HOST_LIST
-      set_fact:
-        tag_list: "{{ tag_list | default ([]) + [{ 'name': item.name, 'version': item.version, 'tag': item.tag  }] }}"
-        os_list: "{{ os_list | default ([]) + [{ 'name': item.name, 'version': item.version }] }}"
-      loop: "{{ host_list }}"
-
-    - name: ERASE DUPLICATES AND SORT TAG_LIST AND OS_LIST
-      set_fact:
-        tag_list: "{{ tag_list | unique | sort(attribute='version', reverse = True) }}"
-        os_list: "{{ os_list | unique | sort(attribute='version', reverse = True) }}"
 
     # Query the Cisco PSIRT openVuln API
 
@@ -117,7 +104,7 @@
         method: GET
         validate_certs: no
         status_code: [200, 406] # API reports 406 NO_DATA if no matching adv is found #
-      loop: "{{ os_list }}"
+      loop: "{{ host_list | unique(attribute='version') | sort(attribute='version') | sort(attribute='name') }}"
 #      environment:
 #        https_proxy: http://<proxy-url>:<port>
       register: open_vuln
@@ -128,3 +115,9 @@
       template:
         src: openvuln.j2
         dest: openvuln.md
+
+    - name: TEMPLATE OUT CSV REPORT
+      template:
+        src: openvuln_csv.j2
+        dest: openvuln.csv
+

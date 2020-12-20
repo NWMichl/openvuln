@@ -5,7 +5,11 @@
 {% for os_loop in open_vuln.results -%}
 ## {{ os_loop.item.name | upper }} - {{ os_loop.item.version }}
 
-{% for item in tag_list %}{% if item.name == os_loop.item.name and item.version == os_loop.item.version %}`{{ item.tag | default ('') }}` {% endif %}{% endfor %}  
+{% for item in host_list | selectattr('version', 'equalto', os_loop.item.version) | map(attribute='tag') | list | unique %}`{{ item | default ('') }}` {% endfor %}  
+ 
+{% if os_loop.json.advisories is defined %}
+{{ host_list | selectattr('version', 'equalto', os_loop.item.version) | map(attribute='host') | list | length }} device(s) affected, visit openvuln.cvs for details.  
+{% endif %}
 
 {% if os_loop.json.advisories is defined %}
 | Advisory-ID | Impact | CVSS | CVE | Fixed with | Known advisory / countermeasure |  
@@ -21,7 +25,7 @@
 {% endif %}
 {% endfor %}
 {% else %}
-No active OpenVuln advisories found!  
+No active OpenVuln advisories found.  
 {% endif %}
   
   
