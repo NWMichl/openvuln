@@ -7,7 +7,7 @@ This playbook collects the software version of all devices in the Ansible invent
   
 ## Use Case Description
 
-Are you tired of crawling the PSIRT newsletter to eventually hit relevant security advisories just to curate a spreadsheet document by hand? Well, in this installment of 'Automate the boring stuff' Ansible does the job for you!
+Are you tired of crawling the PSIRT newsletter to eventually hit relevant security advisories just to curate a spreadsheet document by hand? Well, in this installment of "Automate the boring stuff", Ansible does the job for you!
 
 ## Installation
 
