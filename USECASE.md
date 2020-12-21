@@ -1,5 +1,5 @@
 Vulnerability reports for Cisco IOS, NX-OS and ACI 
-=====================================
+==================================================
 using the PSIRT OpenVuln API
 
 Are you tired of crawling the PSIRT newsletter to eventually hit relevant security advisories? Well, in this installment of 'Automate the boring stuff' Ansible does the job for you. This playbook collects the software version of all devices in the inventory, queries the [Cisco PSIRT OpenVuln API](https://developer.cisco.com/psirt/) and renders an infrastructure specific [markdown report](https://github.com/NWMichl/openvuln/blob/main/openvuln.md).
