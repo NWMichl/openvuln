@@ -23,8 +23,6 @@ to get started.
 
 The playbook needs certain input data to do its job, not all of them are mandatory.
 
-You need to generate a client_key and client_secret via the [Cisco API Console](https://apiconsole.cisco.com/) using your CCO Login under `My Apps & Keys`, `Register a new App`. Select OAuth2.0 Client Credentials and the Cisco PSIRT checkbox to receive the necessary API keys.
-
 ### 1. API Credentials
 
 You need to generate a client_key and client_secret via the [Cisco API Console](https://apiconsole.cisco.com/) using your CCO Login under `My Apps & Keys`, `Register a new App`. Select OAuth2.0 Client Credentials and the Cisco PSIRT checkbox to receive the necessary API keys.
@@ -70,6 +68,8 @@ If you need to reach the OpenVuln API via an https-proxy, just uncomment the fou
 
 In order to use slack as a notification receiver, you need to register a custom app and allow incoming webhooks. The API token can be extracted from the Webhook URL, it's basically everything behind ...services/ . This token has to be provided as an Ansible variable called slack_token and don't forget to uncomment the slack notification task.
 
+![Slack Notification](/pictures/slack_openvuln.jpg)
+
 ## Usage
 
 The playbook can be run 'as is' with the preconfigured test data in the host_list variable, just by adding the API client_key & client_secret.
@@ -96,18 +96,15 @@ vEOS-1 ansible_host=10.10.10.31 ansible_network_os=eos ansible_ssh_user=nwmichl 
 
 ### Output
 
-The markdown result is sorted by platform/software version and provides additional info about the associated hostgroup (tag) as well as the number of affected devices. The tag is either provided by hand via the host_files variable or automagically added based on the Ansible inventory groups and ACI APIC URL/IP.  
+The markdown result is sorted by platform/software version and comes with additional info about the associated hostgroup (tag) as well as the number of affected devices. The tag is either provided by hand via the host_files variable or automagically added based on the Ansible inventory groups and ACI APIC URL/IP.  
 Oh, and each advisoryId has an HTML reference to the Cisco Security Advisory website with all the bad details.
 
 [![Cisco Security Advisory website](/pictures/sec_adv.png)](https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nxosbgp-mvpn-dos-K8kbCrJp)  
 
 The additional `openvuln.csv` file lists all hostnames, group/tag and software version to map advisories to affected device using your spreadsheet software of choice. 
 
-## Backlog
+## Getting help & getting involved
 
-- Implement scheduled pipeline for playbook execution
-- Pipe the vuln metrics to InfluxDB/Grafana to visualize in a CVSS-based heatmap
-- Alert ops about unknown advisories via slack message, Grafana alert or, meh, even mail / ticket
-- ...
+Just hit me up on the [Twitters](https://twitter.com/nwmichl) or open an Issue/PR.
 
 
