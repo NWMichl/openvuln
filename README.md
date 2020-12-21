@@ -54,6 +54,10 @@ This is just a flat dictionary with the advisoryId as the key and an optional co
 
 If you need to reach the OpenVuln API via an https-proxy, just uncomment the four config lines of the Cisco API tasks and enter the proxy parameters, like URL, Port and credentials.
 
+### 6. (opt) Slack notification
+
+In order to use slack as a notification receiver, you need to register a custom app and allow incoming webhooks. The API token can be extracted from the Webhook URL, it's basically everything behind ...services/ . This token has to be provided as an Ansible variable called slack_token and don't forget to uncomment the slack notification task.
+
 ## Playbook execution
 
 The playbook can be run 'as is' with the preconfigured test data in the host_list variable, just by adding the API client_key & client_secret.
