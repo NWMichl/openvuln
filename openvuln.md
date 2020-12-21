@@ -1,6 +1,6 @@
 # Security posture via Cisco PSIRT OpenVuln API
 
-*Report created at 2020-12-20 05:44 CET*
+*Report created at 2020-12-21 12:38 CET*
 
 ## ACI - 14.2(5k)
 
@@ -14,7 +14,7 @@ No active OpenVuln advisories found.
 
 `Test_NXOS`   
  
-1 devices affected, visit openvuln.cvs for details.  
+1 device(s) affected, visit openvuln.cvs for details.  
 
 | Advisory-ID | Impact | CVSS | CVE | Fixed with | Known advisory / countermeasure |  
 | ----------- | ------ | ---- | --- | ---------- | ------------------------------- |  

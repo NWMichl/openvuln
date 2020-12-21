@@ -18,6 +18,8 @@
       - { name: aci, version: 14.2(5k), tag: Test_ACI, host: ACI-leaf-1 }
     client_key: <Provided via Cisco API console>
     client_secret: <Provided via Cisco API console>
+    slack_token: <Provided via custom slack app - incoming webhooks>
+    known_vuln: [] # Empty default list in case known_vuln.yml not found
 
   tasks:
 
@@ -121,3 +123,11 @@
         src: openvuln_csv.j2
         dest: openvuln.csv
 
+#    - name: SEND NOTIFICATION VIA SLACK
+#      slack:
+#        token: "{{ slack_token }}"
+#        msg: "{{ item.0.item.name | upper }} {{ item.0.item.version }} has new advisory <{{ item.1.publicationUrl }}|{{ item.1.advisoryId }}> with `CVSS {{ item.1.cvssBaseScore }}`"
+#      loop: "{{ open_vuln.results | default([]) | subelements('json.advisories', skip_missing=True) }}"
+#      loop_control:
+#        label: "Send message for {{ item.0.item.name | upper }} {{ item.0.item.version }} {{ item.1.advisoryId }}"
+#      when: item.1.advisoryId not in known_vuln
