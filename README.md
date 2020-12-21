@@ -84,14 +84,14 @@ Visit the [Ansible documentation](https://docs.ansible.com/ansible/latest/user_g
 
 ```
 [ios]
-CSR-1 ansible_host=10.10.10.11 ansible_network_os=ios ansible_ssh_user=nwmichl ansible_ssh_pass=<pass>
-CSR-2 ansible_host=10.10.10.12 ansible_network_os=ios ansible_ssh_user=nwmichl ansible_ssh_pass=<pass>
+CSR-1 ansible_host=10.10.10.11 ansible_network_os=ios
+CSR-2 ansible_host=10.10.10.12 ansible_network_os=ios
 
 [nxos]
-N9K-1 ansible_host=10.10.10.21 ansible_network_os=nxos ansible_ssh_user=nwmichl ansible_ssh_pass=<pass>
+N9K-1 ansible_host=10.10.10.21 ansible_network_os=nxos
 
 [eos]
-vEOS-1 ansible_host=10.10.10.31 ansible_network_os=eos ansible_ssh_user=nwmichl ansible_ssh_pass=<pass>
+vEOS-1 ansible_host=10.10.10.31 ansible_network_os=eos
 ```
 
 ### Output
@@ -106,5 +106,3 @@ The additional `openvuln.csv` file lists all hostnames, group/tag and software v
 ## Getting help & getting involved
 
 Just hit me up on the [Twitters](https://twitter.com/nwmichl) or open an Issue/PR.
-
-
