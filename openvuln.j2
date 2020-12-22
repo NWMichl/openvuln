@@ -16,12 +16,12 @@
 | ----------- | ------ | ---- | --- | ---------- | ------------------------------- |  
 {% for adv in os_loop.json.advisories %}
 {% if adv.cvssBaseScore == '10.0' %}
-| [{{ adv.advisoryId }}]({{ adv.publicationUrl }}) | {{ adv.sir }} | {{ adv.cvssBaseScore }} | {{ adv.cves[0] | default('') }} | {{ adv.platforms[0].firstFixes[0].name | default('') }} | {{ known_vuln[adv.advisoryId] | default('') }} |  
+| [{{ adv.advisoryId }}]({{ adv.publicationUrl }}) | {{ adv.sir }} | {{ adv.cvssBaseScore }} | {{ adv.cves[0] | default('') }} | {{ adv.platforms[0].firstFixes[0].name | default('') }}{% if adv.firstFixed is defined %}{{ adv.firstFixed | join(',') }}{% endif %} | {{ known_vuln[adv.advisoryId] | default('') }} |  
 {% endif %}
 {% endfor %}
 {% for adv in os_loop.json.advisories | sort(attribute='cvssBaseScore', reverse = True) %}
 {% if adv.cvssBaseScore != '10.0' %}
-| [{{ adv.advisoryId }}]({{ adv.publicationUrl }}) | {{ adv.sir }} | {{ adv.cvssBaseScore }} | {{ adv.cves[0] | default('') }} | {{ adv.platforms[0].firstFixes[0].name | default('') }} | {{ known_vuln[adv.advisoryId] | default('') }} |  
+| [{{ adv.advisoryId }}]({{ adv.publicationUrl }}) | {{ adv.sir }} | {{ adv.cvssBaseScore }} | {{ adv.cves[0] | default('') }} | {{ adv.platforms[0].firstFixes[0].name | default('') }}{% if adv.firstFixed is defined %}{{ adv.firstFixed | join(',') }}{% endif %} | {{ known_vuln[adv.advisoryId] | default('') }} |  
 {% endif %}
 {% endfor %}
 {% else %}

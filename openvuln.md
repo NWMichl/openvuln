@@ -1,6 +1,6 @@
 # Security posture via Cisco PSIRT OpenVuln API
 
-*Report created at 2020-12-21 12:38 CET*
+*Report created at 2020-12-22 15:27 CET*
 
 ## ACI - 14.2(5k)
 
