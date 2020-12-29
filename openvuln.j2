@@ -1,6 +1,6 @@
 # Security posture via Cisco PSIRT OpenVuln API
 
-*Report created at {{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }} {{ ansible_date_time.tz }}*
+*Report created at {{ now().strftime("%Y-%m-%d %H:%M:%S") }}*
 
 {% for os_loop in open_vuln.results -%}
 ## {{ os_loop.item.name | upper }} - {{ os_loop.item.version }}
