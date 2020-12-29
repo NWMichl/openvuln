@@ -8,7 +8,7 @@
 
 - name: Collect ACI software version and query Cisco PSIRT OpenVuln API
   hosts: localhost
-  gather_facts: true
+  gather_facts: false
   gather_subset: min
   vars:
 #    aci:
