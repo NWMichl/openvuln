@@ -11,6 +11,7 @@
   gather_facts: false
   gather_subset: min
   vars:
+    known_vuln: [] # Empty default list in case known_vuln.yml not found
 #    aci:
 #      - { apic: <APIC-URL/IP>, aci_user: <username>, aci_pass: <password> }
     host_list: # Needs at least an empty tag: and host: variable per list item #
@@ -18,8 +19,11 @@
       - { name: aci, version: 14.2(5k), tag: Test_ACI, host: ACI-leaf-1 }
     client_key: <Provided via Cisco API console>
     client_secret: <Provided via Cisco API console>
-    slack_token: <Provided via custom slack app - incoming webhooks>
-    known_vuln: [] # Empty default list in case known_vuln.yml not found
+#    slack_token: <Provided via custom slack app - incoming webhooks>
+#    influxdb_host: 
+#    influxdb_username: 
+#    influxdb_password: 
+#    influxdb_name: 
 
   tasks:
 
@@ -131,3 +135,22 @@
 #      loop_control:
 #        label: "Send message for {{ item.0.item.name | upper }} {{ item.0.item.version }} {{ item.1.advisoryId }}"
 #      when: item.1.advisoryId not in known_vuln
+
+#    - name: SEND OPENVULN METRICS TO INFLUXDB
+#      influxdb_write:
+#        hostname: "{{ influxdb_host }}"
+#        username: "{{ influxdb_username }}"
+#        password: "{{ influxdb_password }}"
+#        database_name: "{{influxdb_name}}"
+#        data_points:
+#          - measurement: openvuln
+#            tags:
+#              os: "{{ item.0.item.name | upper }} {{ item.0.item.version }}"
+#              adv: "{{ item.1.advisoryId }}"
+#            fields:
+#              value: "{{ item.1.cvssBaseScore }}"
+#      loop: "{{ open_vuln.results | default([]) | subelements('json.advisories', skip_missing=True) }}"
+#      loop_control:
+#        label: "Send metric {{ item.1.cvssBaseScore }} for {{ item.0.item.name | upper }} {{ item.0.item.version }} {{ item.1.advisoryId }}"
+#      when: item.1.advisoryId not in known_vuln
+
