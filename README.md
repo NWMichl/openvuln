@@ -1,3 +1,5 @@
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/NWMichl/openvuln)
+
 # Vulnerability reports for Cisco IOS, NX-OS and ACI 
 
 This playbook collects the software version of all devices in the Ansible inventory, queries the [Cisco PSIRT OpenVuln API](https://developer.cisco.com/psirt/) and renders an infrastructure specific [markdown report](https://github.com/NWMichl/openvuln/blob/main/openvuln.md).  
