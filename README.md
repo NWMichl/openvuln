@@ -70,6 +70,19 @@ In order to use slack as a notification receiver, you need to register a custom 
 
 ![Slack Notification](/pictures/slack_openvuln.jpg)
 
+### 7. (opt) Send CVSS metrics to InfluxDB / Grafana 
+
+To integrate an OpenVuln graph panel with your ops dashboards, just uncomment the InfluxDB Task and set the InfluxDB variables in the 2nd play accordingly.
+
+* influxdb_host: <IP/URL of your InfluxDB server> 
+* influxdb_username: <Username with write permissions>
+* influxdb_password: <Password>
+* influxdb_name: <Database name>
+
+A demo dashboard with a little graph panel can be imported using the file openvuln_grafana.json.
+
+![OpenVuln graph panel](/pictures/grafana_panel.png)
+
 ## Usage
 
 The playbook can be run 'as is' with the preconfigured test data in the host_list variable, just by adding the API client_key & client_secret.
