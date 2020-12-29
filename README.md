@@ -78,6 +78,10 @@ To integrate an OpenVuln graph panel with your ops dashboards, just uncomment th
 * influxdb_username: <Username with write permissions>
 * influxdb_password: <Password>
 * influxdb_name: <Database name>
+  
+This Ansible module needs the influxdb Python library:
+
+`pip install influxdb`
 
 A demo dashboard with a little graph panel can be imported using the file openvuln_grafana.json.
 
