@@ -1,32 +1,18 @@
 # Security posture via Cisco PSIRT OpenVuln API
 
-*Report created at {{ now().strftime("%Y-%m-%d %H:%M:%S") }}*
+*Scanned {{ host_list | length }} hosts at {{ now().strftime("%Y-%m-%d %H:%M:%S") }}*
 
-{% for os_loop in open_vuln.results -%}
-## {{ os_loop.item.name | upper }} - {{ os_loop.item.version }}
+{% for os_loop in adv_list | map(attribute='os') | list | unique -%}
+## {{ os_loop }}  
+  
+Tags: {% for item in host_list | selectattr('os', 'equalto', os_loop) | map(attribute='tag') | list | unique %}`{{ item | default ('') }}` {% endfor %}  
+{{ host_list | selectattr('os', 'equalto', os_loop) | map(attribute='host') | list | length }} device(s) affected, visit openvuln.cvs for details.
 
-{% for item in host_list | selectattr('version', 'equalto', os_loop.item.version) | map(attribute='tag') | list | unique %}`{{ item | default ('') }}` {% endfor %}  
- 
-{% if os_loop.json.advisories is defined %}
-{{ host_list | selectattr('version', 'equalto', os_loop.item.version) | map(attribute='host') | list | length }} device(s) affected, visit openvuln.cvs for details.  
-{% endif %}
-
-{% if os_loop.json.advisories is defined %}
 | Advisory-ID | Impact | CVSS | CVE | Fixed with | Known advisory / countermeasure |  
 | ----------- | ------ | ---- | --- | ---------- | ------------------------------- |  
-{% for adv in os_loop.json.advisories %}
-{% if adv.cvssBaseScore == '10.0' %}
-| [{{ adv.advisoryId }}]({{ adv.publicationUrl }}) | {{ adv.sir }} | {{ adv.cvssBaseScore }} | {{ adv.cves[0] | default('') }} | {{ adv.platforms[0].firstFixes[0].name | default('') }}{% if adv.firstFixed is defined %}{{ adv.firstFixed | join(',') }}{% endif %} | {{ known_vuln[adv.advisoryId] | default('') }} |  
-{% endif %}
-{% endfor %}
-{% for adv in os_loop.json.advisories | sort(attribute='cvssBaseScore', reverse = True) %}
-{% if adv.cvssBaseScore != '10.0' %}
-| [{{ adv.advisoryId }}]({{ adv.publicationUrl }}) | {{ adv.sir }} | {{ adv.cvssBaseScore }} | {{ adv.cves[0] | default('') }} | {{ adv.platforms[0].firstFixes[0].name | default('') }}{% if adv.firstFixed is defined %}{{ adv.firstFixed | join(',') }}{% endif %} | {{ known_vuln[adv.advisoryId] | default('') }} |  
-{% endif %}
-{% endfor %}
-{% else %}
-No active OpenVuln advisories found.  
-{% endif %}
-  
-  
-{% endfor %}
+{% for adv_loop in adv_list | selectattr('os', 'equalto', os_loop) | sort(attribute='cvss', reverse = True) %}
+| {{ adv_loop.id }} | {{ adv_loop.sir }} | {{ adv_loop.cvss }} | {{ adv_loop.cve }} | {{ adv_loop.fixed }} | {{ known_vuln[adv_loop.id] | default('') }} |
+{% endfor%}
+
+{% endfor%}
+
