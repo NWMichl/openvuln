@@ -1,8 +1,8 @@
 # Security posture via Cisco PSIRT OpenVuln API
 
-*Scanned 2 devices at 2021-01-02 08:35:14*
+*Scanned 2 devices at 2021-01-02 09:01:30*
 
-**Unreachable:**   
+**Unreachable:** []  
 
 ## nxos 7.0(3)I7(7)  
   

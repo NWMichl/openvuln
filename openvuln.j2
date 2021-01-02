@@ -2,7 +2,7 @@
 
 *Scanned {{ host_list | length }} devices at {{ now().strftime("%Y-%m-%d %H:%M:%S") }}*
 
-**Unreachable:** {{ groups['all'] | difference(host_list | map(attribute='host') | list) | join(' ') }}  
+**Unreachable:** [{{ groups['all'] | difference(host_list | map(attribute='host') | list) | join(' ') }}]  
 
 {% for os_loop in adv_list | map(attribute='os') | list | unique -%}
 ## {{ os_loop }}  
