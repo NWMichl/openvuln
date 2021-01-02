@@ -109,7 +109,7 @@
           Authorization: "{{ login.json.token_type }} {{ login.json.access_token }}"
         method: GET
         validate_certs: no
-        status_code: [200, 406] # API reports 406 NO_DATA if no matching adv is found #
+        status_code: [200, 404, 406] # API reports 404 or 406 NO_DATA if no matching adv is found #
       loop: "{{ host_list | unique(attribute='version') | sort(attribute='version') | sort(attribute='name') }}"
 #      environment:
 #        https_proxy: http://<proxy-url>:<port>
