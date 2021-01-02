@@ -1,8 +1,8 @@
 # Security posture via Cisco PSIRT OpenVuln API
 
-*Scanned {{ host_list | length }} hosts at {{ now().strftime("%Y-%m-%d %H:%M:%S") }}*
+*Scanned {{ host_list | length }} devices at {{ now().strftime("%Y-%m-%d %H:%M:%S") }}*
 
-**Hosts unreachable:** {{ groups['all'] | difference(host_list | map(attribute='host') | list) | join(' ')}}  
+**Unreachable:** {{ groups['all'] | difference(host_list | map(attribute='host') | list) | join(' ') }}  
 
 {% for os_loop in adv_list | map(attribute='os') | list | unique -%}
 ## {{ os_loop }}  
@@ -13,7 +13,7 @@ Tags: {% for item in host_list | selectattr('os', 'equalto', os_loop) | map(attr
 | Advisory-ID | Impact | CVSS | CVE | Fixed with | Known advisory / countermeasure |  
 | ----------- | ------ | ---- | --- | ---------- | ------------------------------- |  
 {% for adv_loop in adv_list | selectattr('os', 'equalto', os_loop) | sort(attribute='cvss', reverse = True) %}
-| [{{ adv_loop.id }}]({{ adv_loop.url }})| {{ adv_loop.sir }} | {{ adv_loop.cvss }} | {{ adv_loop.cve }} | {{ adv_loop.fixed }} | {{ known_vuln[adv_loop.id] | default('') }} |
+| [{{ adv_loop.id }}]({{ adv_loop.url }})| {{ adv_loop.sir }} | {{ adv_loop.cvss }} | {{ adv_loop.cve | join(' ') }} | {{ adv_loop.fixed | join('') }} | {{ known_vuln[adv_loop.id] | default('') }} |
 {% endfor%}
 
 {% endfor%}

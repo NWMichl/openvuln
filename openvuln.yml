@@ -9,7 +9,6 @@
 - name: Collect ACI software version and query Cisco PSIRT OpenVuln API
   hosts: localhost
   gather_facts: false
-  gather_subset: min
   vars:
     known_vuln: [] # Empty default list in case known_vuln.yml not found
 #    aci:
@@ -119,16 +118,7 @@
 
     - name: PARSE API RESPONSE
       set_fact:
-        adv_list: "{{ adv_list | default ([]) + [{ 'os': item.0.item.os, 
-                                                   'id': item.1.advisoryId, 
-                                                   'url': item.1.publicationUrl, 
-                                                   'sir': item.1.sir, 
-                                                   'cvss': item.1.cvssBaseScore | float(), 
-                                                   'cve': item.1.cves[0] | default(''),
-                                                   'fixed': item.1.firstFixed | default('') + item.1.platforms[0].firstFixes[0].name | default('') }] }}"
-      loop: "{{ open_vuln.results | default([]) | subelements('json.advisories', skip_missing=True) }}"
-      loop_control:
-        label: "{{ item.0.item.os }} - Advisory {{ item.1.advisoryId }}"
+        adv_list: "{{ open_vuln.results | custom_adv_filter }}"
 
     - name: TEMPLATE OUT MARKDOWN REPORT
       template:
