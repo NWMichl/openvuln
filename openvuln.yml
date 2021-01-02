@@ -48,15 +48,19 @@
 
     - name: ADD ACI DEVICES TO HOST_LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'os': 'aci 1' + item.1.firmwareRunning.attributes.peVer, 'tag': item.0.item.apic, 'host': item.1.firmwareRunning.attributes.dn.split('/')[2] }] }}"
-      loop: "{{ aci_firmware.results | default ([]) | subelements('imdata') }}" # Definitely needs an empty list in case aci variable is not defined! #
+        host_list: "{{ host_list | default ([]) + [{ 'os': 'aci 1' + item.1.firmwareRunning.attributes.peVer, 
+                                                     'tag': item.0.item.apic, 
+                                                     'host': item.1.firmwareRunning.attributes.dn.split('/')[2] }] }}"
+      loop: "{{ aci_firmware.results | default ([]) | subelements('imdata') }}" # Needs an empty list in case aci var is not defined! #
       loop_control:
         label: "{{ item.0.item.apic }} {{ item.1.firmwareRunning.attributes.dn.split('/')[2] }}"
       when: aci is defined
 
     - name: ADD NX-OS DEVICES TO HOST_LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'os': 'nxos ' + hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' '), 'host': hostvars[item].ansible_facts.net_hostname }] }}"
+        host_list: "{{ host_list | default ([]) + [{ 'os': 'nxos ' + hostvars[item].ansible_facts.net_version, 
+                                                     'tag': hostvars[item].group_names | join(' '), 
+                                                     'host': hostvars[item].ansible_facts.net_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
@@ -64,22 +68,24 @@
 
     - name: ADD IOS-XE DEVICES TO HOST_LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'os': 'iosxe ' + hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' '), 'host': hostvars[item].ansible_facts.net_hostname }] }}"
+        host_list: "{{ host_list | default ([]) + [{ 'os': 'iosxe ' + hostvars[item].ansible_facts.net_version, 
+                                                     'tag': hostvars[item].group_names | join(' '), 
+                                                     'host': hostvars[item].ansible_facts.net_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
         - hostvars[item].ansible_network_os == "ios"
-        - hostvars[item].ansible_facts.net_version is defined
         - hostvars[item].ansible_facts.net_version.split('.') | first in  ['03', '16', '17']
 
     - name: ADD IOS DEVICES TO HOST_LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'os': 'ios ' + hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' '), 'host': hostvars[item].ansible_facts.net_hostname }] }}"
+        host_list: "{{ host_list | default ([]) + [{ 'os': 'ios ' + hostvars[item].ansible_facts.net_version, 
+                                                     'tag': hostvars[item].group_names | join(' '), 
+                                                     'host': hostvars[item].ansible_facts.net_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
         - hostvars[item].ansible_network_os == "ios"
-        - hostvars[item].ansible_facts.net_version is defined
         - hostvars[item].ansible_facts.net_version.split('.') | first in ['12', '15']
 
     # Query the Cisco PSIRT openVuln API
