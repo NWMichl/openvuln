@@ -1,6 +1,6 @@
 # Security posture via Cisco PSIRT OpenVuln API
 
-*Scanned 2 devices at 2021-01-02 09:01:30*
+*Scanned 2 devices at 2021-01-02 22:36:02*
 
 **Unreachable:** []  
 
