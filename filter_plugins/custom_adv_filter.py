@@ -29,7 +29,7 @@ class FilterModule(object):
                     output_var.append({ 'os': os_loop['item']['os'], 
                                         'id': adv_loop['advisoryId'],
                                         'sir': adv_loop['sir'],
-                                        'cvss': cvss_float),
+                                        'cvss': cvss_float,
                                         'cve': adv_loop.get('cves', []),
                                         'url': adv_loop['publicationUrl'],
                                         'fixed': fixed
