@@ -60,32 +60,35 @@
       set_fact:
         host_list: "{{ host_list | default ([]) + [{ 'os': 'nxos ' + hostvars[item].ansible_facts.net_version, 
                                                      'tag': hostvars[item].group_names | join(' '), 
-                                                     'host': hostvars[item].ansible_facts.net_hostname }] }}"
+                                                     'host': hostvars[item].inventory_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
         - hostvars[item].ansible_network_os == "nxos"
+        - hostvars[item].ansible_facts.net_version is defined
 
     - name: ADD IOS-XE DEVICES TO HOST_LIST
       set_fact:
         host_list: "{{ host_list | default ([]) + [{ 'os': 'iosxe ' + hostvars[item].ansible_facts.net_version, 
                                                      'tag': hostvars[item].group_names | join(' '), 
-                                                     'host': hostvars[item].ansible_facts.net_hostname }] }}"
+                                                     'host': hostvars[item].inventory_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
         - hostvars[item].ansible_network_os == "ios"
+        - hostvars[item].ansible_facts.net_version is defined
         - hostvars[item].ansible_facts.net_version.split('.') | first in  ['03', '16', '17']
 
     - name: ADD IOS DEVICES TO HOST_LIST
       set_fact:
         host_list: "{{ host_list | default ([]) + [{ 'os': 'ios ' + hostvars[item].ansible_facts.net_version, 
                                                      'tag': hostvars[item].group_names | join(' '), 
-                                                     'host': hostvars[item].ansible_facts.net_hostname }] }}"
+                                                     'host': hostvars[item].inventory_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
         - hostvars[item].ansible_network_os == "ios"
+        - hostvars[item].ansible_facts.net_version is defined
         - hostvars[item].ansible_facts.net_version.split('.') | first in ['12', '15']
 
     # Query the Cisco PSIRT openVuln API
