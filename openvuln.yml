@@ -15,7 +15,7 @@
 #      - { apic: <APIC-URL/IP>, aci_user: <username>, aci_pass: <password> }
     host_list: # Needs at least an empty tag: and host: variable per list item #
       - { os: 'nxos 7.0(3)I7(7)', tag: Test_NXOS1, host: N9K-1 }
-      - { os: 'aci 14.2(5k)', tag: Test_ACI, host: ACI-leaf-1 }
+#      - { os: 'ios 12.2(53)SE1', tag: Test_blankCVSS, host: IOS-1 }
     client_key: <Provided via Cisco API console>
     client_secret: <Provided via Cisco API console>
     slack_token: <Provided via custom slack app - incoming webhooks>
@@ -56,40 +56,15 @@
         label: "{{ item.0.item.apic }} {{ item.1.firmwareRunning.attributes.dn.split('/')[2] }}"
       when: aci is defined
 
-    - name: ADD NX-OS DEVICES TO HOST_LIST
+    - name: ADD IOS-(XE) AND NX-OS DEVICES TO HOST_LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'os': 'nxos ' + hostvars[item].ansible_facts.net_version, 
+        host_list: "{{ host_list | default ([]) + [{ 'os': [ hostvars[item].ansible_network_os, hostvars[item].ansible_facts.net_version ] | custom_net_os_filter, 
                                                      'tag': hostvars[item].group_names | join(' '), 
                                                      'host': hostvars[item].inventory_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
-        - hostvars[item].ansible_network_os == "nxos"
         - hostvars[item].ansible_facts.net_version is defined
-
-    - name: ADD IOS-XE DEVICES TO HOST_LIST
-      set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'os': 'iosxe ' + hostvars[item].ansible_facts.net_version, 
-                                                     'tag': hostvars[item].group_names | join(' '), 
-                                                     'host': hostvars[item].inventory_hostname }] }}"
-      loop: "{{ groups['all'] }}"
-      when:
-        - hostvars[item].ansible_network_os is defined
-        - hostvars[item].ansible_network_os == "ios"
-        - hostvars[item].ansible_facts.net_version is defined
-        - hostvars[item].ansible_facts.net_version.split('.') | first in  ['03', '16', '17']
-
-    - name: ADD IOS DEVICES TO HOST_LIST
-      set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'os': 'ios ' + hostvars[item].ansible_facts.net_version, 
-                                                     'tag': hostvars[item].group_names | join(' '), 
-                                                     'host': hostvars[item].inventory_hostname }] }}"
-      loop: "{{ groups['all'] }}"
-      when:
-        - hostvars[item].ansible_network_os is defined
-        - hostvars[item].ansible_network_os == "ios"
-        - hostvars[item].ansible_facts.net_version is defined
-        - hostvars[item].ansible_facts.net_version.split('.') | first in ['12', '15']
 
     # Query the Cisco PSIRT openVuln API
 
