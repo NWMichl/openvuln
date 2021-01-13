@@ -9,17 +9,16 @@
 - name: Collect ACI software version and query Cisco PSIRT OpenVuln API
   hosts: localhost
   gather_facts: false
-  gather_subset: min
   vars:
     known_vuln: [] # Empty default list in case known_vuln.yml not found
 #    aci:
 #      - { apic: <APIC-URL/IP>, aci_user: <username>, aci_pass: <password> }
     host_list: # Needs at least an empty tag: and host: variable per list item #
-      - { name: nxos, version: 7.0(3)I7(7), tag: Test_NXOS, host: N9K-1 }
-      - { name: aci, version: 14.2(5k), tag: Test_ACI, host: ACI-leaf-1 }
+      - { os: 'nxos 7.0(3)I7(7)', tag: Test_NXOS1, host: N9K-1 }
+#      - { os: 'ios 12.2(53)SE1', tag: Test_blankCVSS, host: IOS-1 }
     client_key: <Provided via Cisco API console>
     client_secret: <Provided via Cisco API console>
-#    slack_token: <Provided via custom slack app - incoming webhooks>
+    slack_token: <Provided via custom slack app - incoming webhooks>
 #    influxdb_host: 
 #    influxdb_username: 
 #    influxdb_password: 
@@ -47,41 +46,25 @@
 
     # Complete the host_list with ACI, NX-OS, IOS-XE and IOS devices #
 
-    - name: ADD ACI DEVICES TO HOST LIST
+    - name: ADD ACI DEVICES TO HOST_LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'name': 'aci', 'version': '1' + item.1.firmwareRunning.attributes.peVer, 'tag': item.0.item.apic, 'host': item.1.firmwareRunning.attributes.dn.split('/')[2] }] }}"
-      loop: "{{ aci_firmware.results | default ([]) | subelements('imdata') }}" # Definitely needs an empty list in case aci variable is not defined! #
+        host_list: "{{ host_list | default ([]) + [{ 'os': 'aci 1' + item.1.firmwareRunning.attributes.peVer, 
+                                                     'tag': item.0.item.apic, 
+                                                     'host': item.1.firmwareRunning.attributes.dn.split('/')[2] }] }}"
+      loop: "{{ aci_firmware.results | default ([]) | subelements('imdata') }}" # Needs an empty list in case aci var is not defined! #
       loop_control:
         label: "{{ item.0.item.apic }} {{ item.1.firmwareRunning.attributes.dn.split('/')[2] }}"
       when: aci is defined
 
-    - name: ADD NX-OS DEVICES TO HOST LIST
+    - name: ADD IOS-(XE) AND NX-OS DEVICES TO HOST_LIST
       set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'name': 'nxos', 'version': hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' '), 'host': hostvars[item].ansible_facts.net_hostname }] }}"
+        host_list: "{{ host_list | default ([]) + [{ 'os': [ hostvars[item].ansible_network_os, hostvars[item].ansible_facts.net_version ] | custom_net_os_filter, 
+                                                     'tag': hostvars[item].group_names | join(' '), 
+                                                     'host': hostvars[item].inventory_hostname }] }}"
       loop: "{{ groups['all'] }}"
       when:
         - hostvars[item].ansible_network_os is defined
-        - hostvars[item].ansible_network_os == "nxos"
-
-    - name: ADD IOS-XE DEVICES TO HOST LIST
-      set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'name': 'iosxe', 'version': hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' '), 'host': hostvars[item].ansible_facts.net_hostname }] }}"
-      loop: "{{ groups['all'] }}"
-      when:
-        - hostvars[item].ansible_network_os is defined
-        - hostvars[item].ansible_network_os == "ios"
         - hostvars[item].ansible_facts.net_version is defined
-        - hostvars[item].ansible_facts.net_version.split('.') | first in  ['03', '16', '17']
-
-    - name: ADD IOS DEVICES TO HOST LIST
-      set_fact:
-        host_list: "{{ host_list | default ([]) + [{ 'name': 'ios', 'version': hostvars[item].ansible_facts.net_version, 'tag': hostvars[item].group_names | join(' '), 'host': hostvars[item].ansible_facts.net_hostname }] }}"
-      loop: "{{ groups['all'] }}"
-      when:
-        - hostvars[item].ansible_network_os is defined
-        - hostvars[item].ansible_network_os == "ios"
-        - hostvars[item].ansible_facts.net_version is defined
-        - hostvars[item].ansible_facts.net_version.split('.') | first in ['12', '15']
 
     # Query the Cisco PSIRT openVuln API
 
@@ -103,19 +86,23 @@
 
     - name: GET CISCO PSIRT OPEN VULN
       uri:
-        url: https://api.cisco.com/security/advisories/{{ item.name }}?version={{ item.version }}
+        url: https://api.cisco.com/security/advisories/{{ item.os.split()[0] }}?version={{ item.os.split()[1] }}
         headers:
           Accept: application/json
           Authorization: "{{ login.json.token_type }} {{ login.json.access_token }}"
         method: GET
         validate_certs: no
         status_code: [200, 404, 406] # API reports 404 or 406 NO_DATA if no matching adv is found #
-      loop: "{{ host_list | unique(attribute='version') | sort(attribute='version') | sort(attribute='name') }}"
+      loop: "{{ host_list | unique(attribute='os') | sort(attribute='os') }}"
 #      environment:
 #        https_proxy: http://<proxy-url>:<port>
       register: open_vuln
 
      # Process API response #
+
+    - name: PARSE API RESPONSE
+      set_fact:
+        adv_list: "{{ open_vuln.results | custom_adv_filter }}"
 
     - name: TEMPLATE OUT MARKDOWN REPORT
       template:
@@ -130,11 +117,11 @@
 #    - name: SEND NOTIFICATION VIA SLACK
 #      slack:
 #        token: "{{ slack_token }}"
-#        msg: "{{ item.0.item.name | upper }} {{ item.0.item.version }} has new advisory <{{ item.1.publicationUrl }}|{{ item.1.advisoryId }}> with `CVSS {{ item.1.cvssBaseScore }}`"
-#      loop: "{{ open_vuln.results | default([]) | subelements('json.advisories', skip_missing=True) }}"
+#        msg: "{{ item.os }} has new advisory <{{ item.url }}|{{ item.id }}> with `CVSS {{ item.cvss }}`"
+#      loop: "{{ adv_list }}"
 #      loop_control:
-#        label: "Send message for {{ item.0.item.name | upper }} {{ item.0.item.version }} {{ item.1.advisoryId }}"
-#      when: item.1.advisoryId not in known_vuln
+#        label: "Send message for {{ item.os }} {{ item.id }}"
+#      when: item.id not in known_vuln
 
 #    - name: SEND OPENVULN METRICS TO INFLUXDB
 #      influxdb_write:
@@ -145,12 +132,11 @@
 #        data_points:
 #          - measurement: openvuln
 #            tags:
-#              os: "{{ item.0.item.name | upper }} {{ item.0.item.version }}"
-#              adv: "{{ item.1.advisoryId }}"
+#              os: "{{ item.os }}"
+#              adv: "{{ item.id }}"
 #            fields:
-#              value: "{{ item.1.cvssBaseScore }}"
-#      loop: "{{ open_vuln.results | default([]) | subelements('json.advisories', skip_missing=True) }}"
+#              value: "{{ item.cvss }}"
+#      loop: "{{ adv_list }}"
 #      loop_control:
-#        label: "Send metric {{ item.1.cvssBaseScore }} for {{ item.0.item.name | upper }} {{ item.0.item.version }} {{ item.1.advisoryId }}"
-#      when: item.1.advisoryId not in known_vuln
-
+#        label: "Send metric {{ item.cvss }} for {{ item.os }} {{ item.id }}"
+#      when: item.id not in known_vuln

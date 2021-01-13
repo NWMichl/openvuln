@@ -1,4 +1,4 @@
-Hostname, Group Tag, Platform, OS Version
+Hostname, Group Tag, OS Version
 {% for item in host_list %}
-{{ item.host | default('') }}, {{ item.tag | default('') }}, {{ item.name }}, {{ item.version }}
+{{ item.host | default('') }}, {{ item.tag | default('') }}, {{ item.os }}
 {% endfor %}

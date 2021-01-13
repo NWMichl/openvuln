@@ -1,3 +1,3 @@
-Hostname, Group Tag, Platform, OS Version
-N9K-1, Test_NXOS, nxos, 7.0(3)I7(7)
-ACI-leaf-1, Test_ACI, aci, 14.2(5k)
+Hostname, Group Tag, OS Version
+N9K-1, Test_NXOS1, nxos 7.0(3)I7(7)
+ACI-leaf-1, Test_ACI, aci 14.2(5k)
